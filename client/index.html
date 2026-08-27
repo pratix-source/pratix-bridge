@@ -16,7 +16,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="/manus-storage/pratix-bridge-icon-192_102d5c85.png" />
+    <link rel="apple-touch-icon" href="https://files.manuscdn.com/user_upload_by_module/session_file/310519663725315725/wqWMBzpBygFNGgAj.png" />
     <link rel="canonical" href="https://bridge.pratix.io/" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Pratix Bridge | Secure P2P Text &amp; File Transfer" />
@@ -27,6 +27,21 @@
 
   <body>
     <div id="root"></div>
+    <script>
+      if (window.location.protocol === "file:") {
+        document.getElementById("root").innerHTML = `
+          <main style="box-sizing:border-box;min-height:100vh;display:grid;place-items:center;padding:24px;background:#f8fafc;color:#0f172a;font-family:Inter,system-ui,sans-serif">
+            <section style="max-width:640px;border:1px solid #dbe4f0;border-radius:24px;background:#fff;padding:36px;box-shadow:0 20px 55px rgba(15,23,42,.10)">
+              <div style="width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-weight:800">↔</div>
+              <p style="margin:22px 0 6px;color:#2563eb;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase">Pratix Bridge</p>
+              <h1 style="margin:0;font-size:28px;letter-spacing:-.03em">Start this app through a local server.</h1>
+              <p style="margin:16px 0;color:#475569;line-height:1.6">This Vite application loads browser source modules, so <code>client/index.html</code> cannot run when it is opened directly from a ZIP file. This notice replaces a blank screen.</p>
+              <ol style="margin:20px 0;padding-left:20px;color:#334155;line-height:1.8"><li>Install Node.js 22+ and pnpm.</li><li>Open the extracted project folder.</li><li>Run <code>START-PRATIX-BRIDGE.bat</code> on Windows, or <code>START-PRATIX-BRIDGE.command</code> on macOS/Linux.</li></ol>
+              <p style="margin:0;color:#64748b;font-size:13px">Alternatively, run <code>pnpm install</code> and <code>pnpm dev</code>, then open <strong>http://localhost:3000</strong>. See <code>START-HERE.html</code> or README.md for details.</p>
+            </section>
+          </main>`;
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
     <script
       defer

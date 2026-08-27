@@ -13,5 +13,11 @@
 - [x] GitHub aktarımı ve Vercel deploy süreci için yapılandırma ve dokümantasyon hazırlamak
 - [x] Vitest kapsamını yazmak ve uygulamanın kalite kontrollerini çalıştırmak
 - [x] Kaynak kodu, SEO içeriği, yapılandırmalar ve belgeleri içeren ZIP arşivini oluşturmak
-- [ ] Son kontrol edilmiş proje sürümünü ve ZIP paketini kullanıcıya teslim etmek
+- [x] Son kontrol edilmiş proje sürümünü ve ZIP paketini kullanıcıya teslim etmek
 - [x] PWA manifesti, uygulama simgeleri ve desteklenen tarayıcılarda ana ekrana ekleme akışını eklemek
+- [x] ZIP içinden dosyaya çift tıklama kaynaklı beyaz ekranı açıklayan ve tek adımda yerel sunucu başlatan yardımcıları eklemek
+- [x] Güncel yerel çalıştırma paketini test edip yeni ZIP arşivi olarak teslim etmek
+- [x] Tek tıklamayla yerel önizleme açan kolay dağıtım yardımcısını hazırlamak
+- [x] Güncel kolay dağıtım paketini doğrulayıp kullanıcıya yeniden teslim etmek
+- [x] Vercel’de ortam değişkeni ve veritabanı olmadan çalışan varsayılan P2P sinyalleşme yolunu eklemek
+- [x] Vercel’e yalnızca GitHub Import/Deploy ile yayınlama kılavuzunu sadeleştirmek

@@ -9,7 +9,7 @@
   "background_color": "#f8fafc",
   "theme_color": "#2563eb",
   "icons": [
-    { "src": "/manus-storage/pratix-bridge-icon-192_102d5c85.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/manus-storage/pratix-bridge-icon-512_1ebdef62.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663725315725/wqWMBzpBygFNGgAj.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "https://files.manuscdn.com/user_upload_by_module/session_file/310519663725315725/CpgyreWnuBiJBkNM.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
