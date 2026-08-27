@@ -45,9 +45,14 @@ const additionalDictionaries = {
   zh: { browserToBrowser: "浏览器到浏览器传输", ready: "准备配对", pairingExpired: "配对已过期", needsAttention: "需要注意", createDescription: "生成限时码，然后让另一台设备通过 PIN 或二维码加入。", copy: "复制", copied: "已复制", feedback: "传输反馈", directMessages: "您的直接消息会显示在这里。", item: "个项目", items: "个项目", sending: "正在发送", receiving: "正在接收", noStorage: "不存储文件", pairingWindow: "10分钟配对窗口", worksAcrossNetworks: "可跨网络工作", handoffTitle: "为清爽交接而设计。", handoffBody: "PIN 仅用于配对。您选择的文本和文件会在两个浏览器之间直接传输。", adTitle: "预留且不打扰的位置", adBody: "赞助内容可显示在此处，而不会遮挡传输控制或任务反馈。", privacy: "隐私优先设计", privacyBody: "传输期间请保持页面打开。完成后关闭桥接以删除配对元数据。", installTitle: "将 Pratix Bridge 添加到主屏幕。", installHint: "在 iPhone 或 iPad 上，请用 Safari 打开此页，点击分享后选择添加到主屏幕。在 Android 或 Chromium 上，请使用浏览器安装选项。" },
 } as const;
 
-export type TranslationKey = BaseTranslationKey | keyof typeof additionalDictionaries.en;
+const fileStatusDictionaries: Record<Locale, { complete: string; failed: string }> = {
+  en: { complete: "Complete", failed: "Failed" }, tr: { complete: "Tamamlandı", failed: "Başarısız" }, de: { complete: "Abgeschlossen", failed: "Fehlgeschlagen" }, es: { complete: "Completado", failed: "Fallido" }, fr: { complete: "Terminé", failed: "Échec" }, it: { complete: "Completato", failed: "Non riuscito" }, pt: { complete: "Concluído", failed: "Falhou" }, nl: { complete: "Voltooid", failed: "Mislukt" }, ar: { complete: "مكتمل", failed: "فشل" }, ja: { complete: "完了", failed: "失敗" }, ko: { complete: "완료", failed: "실패" }, zh: { complete: "已完成", failed: "失败" },
+};
+
+export type TranslationKey = BaseTranslationKey | keyof typeof additionalDictionaries.en | keyof typeof fileStatusDictionaries.en;
 
 export function translate(locale: Locale, key: TranslationKey) {
+  if (key in fileStatusDictionaries.en) return fileStatusDictionaries[locale][key as keyof typeof fileStatusDictionaries.en];
   if (key in additionalDictionaries.en) return additionalDictionaries[locale][key as keyof typeof additionalDictionaries.en];
   return dictionaries[locale][key as BaseTranslationKey] ?? dictionaries.en[key as BaseTranslationKey];
 }

@@ -7,7 +7,7 @@ export type TransferItem = { id: string; name: string; size: number; progress: n
 export type BridgeText = { id: string; body: string; direction: "outgoing" | "incoming"; time: number };
 type Role = "host" | "guest";
 type Pairing = { sessionId: string; roleToken: string; pin: string; role: Role; expiresAt: number };
-type IncomingFile = { id: string; name: string; size: number; mime: string; chunks: ArrayBuffer[]; received: number };
+type IncomingFile = { id: string; name: string; size: number; mime: string; chunks: Uint8Array[]; received: number };
 
 const CHUNK_SIZE = 16 * 1024;
 const PAIRING_TTL_MS = 10 * 60 * 1000;
@@ -16,6 +16,18 @@ function createPin() { return Math.floor(Math.random() * 1_000_000).toString().p
 function bridgeId(pin: string) { return `pratix-bridge-${pin}`; }
 function fileId() { return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`; }
 function errorMessage(error: unknown) { return error instanceof Error ? error.message : "The direct connection could not be started."; }
+
+export function mergeBinaryChunks(chunks: Uint8Array[], expectedSize: number) {
+  const merged = new Uint8Array(expectedSize);
+  let offset = 0;
+  for (const chunk of chunks) {
+    if (offset + chunk.byteLength > expectedSize) throw new Error("Received more binary data than expected.");
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  if (offset !== expectedSize) throw new Error("Received an incomplete file.");
+  return merged;
+}
 
 function awaitPeerOpen(peer: Peer) {
   return new Promise<void>((resolve, reject) => {
@@ -37,6 +49,7 @@ export function useBridgeConnection() {
   const pairingRef = useRef<Pairing | null>(null);
   const expiryTimerRef = useRef<number | null>(null);
   const incomingFileRef = useRef<IncomingFile | null>(null);
+  const dataQueueRef = useRef(Promise.resolve());
 
   const updateTransfer = useCallback((id: string, updates: Partial<TransferItem>) => setTransfers(current => current.map(item => item.id === id ? { ...item, ...updates } : item)), []);
 
@@ -51,20 +64,29 @@ export function useBridgeConnection() {
 
   useEffect(() => () => dispose(), [dispose]);
 
-  const finishIncomingFile = useCallback(() => {
+  const finishIncomingFile = useCallback((id: string, connection: DataConnection) => {
     const incoming = incomingFileRef.current;
-    if (!incoming) return;
-    const url = URL.createObjectURL(new Blob(incoming.chunks, { type: incoming.mime || "application/octet-stream" }));
-    updateTransfer(incoming.id, { progress: 100, status: "complete", downloadUrl: url });
-    incomingFileRef.current = null;
+    if (!incoming || incoming.id !== id) return;
+    try {
+      const merged = mergeBinaryChunks(incoming.chunks, incoming.size);
+      const url = URL.createObjectURL(new Blob([merged], { type: incoming.mime || "application/octet-stream" }));
+      updateTransfer(incoming.id, { progress: 100, status: "complete", downloadUrl: url });
+      connection.send(JSON.stringify({ type: "file-ack", id: incoming.id }));
+    } catch (cause) {
+      updateTransfer(incoming.id, { progress: 0, status: "failed" });
+      setError(`The received file could not be verified: ${errorMessage(cause)}`);
+    } finally {
+      incomingFileRef.current = null;
+    }
   }, [updateTransfer]);
 
   const receiveChunk = useCallback((data: ArrayBuffer) => {
     const incoming = incomingFileRef.current;
     if (!incoming) return;
-    incoming.chunks.push(data);
-    incoming.received += data.byteLength;
-    updateTransfer(incoming.id, { progress: Math.min(99, Math.round((incoming.received / incoming.size) * 100)), status: "receiving" });
+    const chunk = new Uint8Array(data);
+    incoming.chunks.push(chunk);
+    incoming.received += chunk.byteLength;
+    updateTransfer(incoming.id, { progress: Math.min(99, Math.floor((incoming.received / incoming.size) * 100)), status: "receiving" });
   }, [updateTransfer]);
 
   const attachConnection = useCallback((connection: DataConnection) => {
@@ -73,23 +95,27 @@ export function useBridgeConnection() {
     connection.on("close", () => { if (pairingRef.current) { setStatus("error"); setError("Connection closed. Create a new bridge to reconnect."); } });
     connection.on("error", cause => { setStatus("error"); setError(errorMessage(cause)); });
     connection.on("data", data => {
-      if (typeof data === "string") {
-        try {
-          const message = JSON.parse(data) as { type?: string; id?: string; body?: string; name?: string; size?: number; mime?: string; time?: number };
-          const body = message.body;
-          if (message.type === "text" && body) setTexts(current => [...current, { id: message.id ?? fileId(), body, direction: "incoming", time: message.time ?? Date.now() }]);
-          if (message.type === "file-meta" && message.id && message.name && typeof message.size === "number") {
-            incomingFileRef.current = { id: message.id, name: message.name, size: message.size, mime: message.mime ?? "", chunks: [], received: 0 };
-            setTransfers(current => [...current, { id: message.id!, name: message.name!, size: message.size!, progress: 0, status: "receiving", direction: "incoming" }]);
-          }
-          if (message.type === "file-complete") finishIncomingFile();
-        } catch { /* Ignore malformed user data. */ }
-        return;
-      }
-      if (data instanceof ArrayBuffer) receiveChunk(data);
-      else if (data instanceof Blob) void data.arrayBuffer().then(receiveChunk);
+      dataQueueRef.current = dataQueueRef.current.then(async () => {
+        if (typeof data === "string") {
+          try {
+            const message = JSON.parse(data) as { type?: string; id?: string; body?: string; name?: string; size?: number; mime?: string; time?: number };
+            const body = message.body;
+            if (message.type === "file-ack" && message.id) updateTransfer(message.id, { progress: 100, status: "complete" });
+            if (message.type === "text" && body) setTexts(current => [...current, { id: message.id ?? fileId(), body, direction: "incoming", time: message.time ?? Date.now() }]);
+            if (message.type === "file-meta" && message.id && message.name && typeof message.size === "number") {
+              incomingFileRef.current = { id: message.id, name: message.name, size: message.size, mime: message.mime ?? "", chunks: [], received: 0 };
+              setTransfers(current => [...current, { id: message.id!, name: message.name!, size: message.size!, progress: 0, status: "receiving", direction: "incoming" }]);
+            }
+            if (message.type === "file-complete" && message.id) finishIncomingFile(message.id, connection);
+            return;
+          } catch { return; }
+        }
+        if (data instanceof ArrayBuffer) receiveChunk(data);
+        else if (ArrayBuffer.isView(data)) receiveChunk(new Uint8Array(data.buffer, data.byteOffset, data.byteLength).slice().buffer);
+        else if (data instanceof Blob) receiveChunk(await data.arrayBuffer());
+      }).catch(() => setError("A received file packet could not be processed."));
     });
-  }, [finishIncomingFile, receiveChunk]);
+  }, [finishIncomingFile, receiveChunk, updateTransfer]);
 
   const configurePeer = useCallback((peer: Peer) => {
     peerRef.current = peer;

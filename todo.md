@@ -21,3 +21,9 @@
 - [x] Güncel kolay dağıtım paketini doğrulayıp kullanıcıya yeniden teslim etmek
 - [x] Vercel’de ortam değişkeni ve veritabanı olmadan çalışan varsayılan P2P sinyalleşme yolunu eklemek
 - [x] Vercel’e yalnızca GitHub Import/Deploy ile yayınlama kılavuzunu sadeleştirmek
+- [x] Görüntü dosyası chunk bütünlüğünü ve alıcı indirme Blob’unu düzeltmek
+- [x] Yüzde 100 sonrasında gönderici durumunu complete yapmak ve GitHub’a aktarmak
+- [x] Eksik veya bozuk dosyayı görünür failed durumuna ve kullanıcı hatasına dönüştürmek
+- [x] ArrayBufferView, byte-merge ve file-ack akışı için aktarım testi eklemek
+- [x] Dosya kuyruğu etiketini file.status üzerinden ve çeviri sözlüğüyle göstermek
+- [ ] Düzeltme sonrası testleri çalıştırıp GitHub main dalına yeniden push etmek
