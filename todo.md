@@ -33,4 +33,4 @@
 - [x] connection.on(data) içindeki file-ack parse ve complete durumunu davranış testiyle doğrulamak
 - [x] Sahte DataConnection ile gerçek data handler davranışını ArrayBufferView ve file-ack senaryolarında doğrulamak
 - [x] Davranış testlerinden sonra son test, build ve GitHub push kontrolünü tamamlamak
-- [ ] Son DataConnection davranış testi değişikliklerini pratix-source/pratix-bridge main dalına push edip sonucu doğrulamak
+- [x] Son DataConnection davranış testi değişikliklerini pratix-source/pratix-bridge main dalına push edip sonucu doğrulamak
