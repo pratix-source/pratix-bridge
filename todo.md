@@ -26,4 +26,11 @@
 - [x] Eksik veya bozuk dosyayı görünür failed durumuna ve kullanıcı hatasına dönüştürmek
 - [x] ArrayBufferView, byte-merge ve file-ack akışı için aktarım testi eklemek
 - [x] Dosya kuyruğu etiketini file.status üzerinden ve çeviri sözlüğüyle göstermek
-- [ ] Düzeltme sonrası testleri çalıştırıp GitHub main dalına yeniden push etmek
+- [x] Düzeltme sonrası testleri çalıştırıp GitHub main dalına yeniden push etmek
+- [x] ArrayBufferView veri paketlerinin receiveChunk yolunda işlendiğini doğrulayan bir test eklemek
+- [x] file-ack mesajının gönderici transferini complete durumuna taşıdığını doğrulayan bir test eklemek
+- [x] connection.on(data) içindeki ArrayBufferView işleme yolunu davranış testiyle doğrulamak
+- [x] connection.on(data) içindeki file-ack parse ve complete durumunu davranış testiyle doğrulamak
+- [x] Sahte DataConnection ile gerçek data handler davranışını ArrayBufferView ve file-ack senaryolarında doğrulamak
+- [x] Davranış testlerinden sonra son test, build ve GitHub push kontrolünü tamamlamak
+- [ ] Son DataConnection davranış testi değişikliklerini pratix-source/pratix-bridge main dalına push edip sonucu doğrulamak

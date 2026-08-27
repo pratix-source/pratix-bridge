@@ -29,6 +29,47 @@ export function mergeBinaryChunks(chunks: Uint8Array[], expectedSize: number) {
   return merged;
 }
 
+export function toOwnedArrayBuffer(data: ArrayBuffer | ArrayBufferView) {
+  if (data instanceof ArrayBuffer) return data;
+  return new Uint8Array(data.buffer, data.byteOffset, data.byteLength).slice().buffer;
+}
+
+export function applyFileAck(transfers: TransferItem[], id: string) {
+  return transfers.map(item => item.id === id ? { ...item, progress: 100, status: "complete" as const } : item);
+}
+
+type BridgeMessage = { type?: string; id?: string; body?: string; name?: string; size?: number; mime?: string; time?: number };
+type DecodedPacket = { kind: "message"; message: BridgeMessage } | { kind: "binary"; buffer: ArrayBuffer };
+
+export async function decodeBridgePacket(data: unknown): Promise<DecodedPacket | null> {
+  if (typeof data === "string") return { kind: "message", message: JSON.parse(data) as BridgeMessage };
+  if (data instanceof ArrayBuffer) return { kind: "binary", buffer: data };
+  if (ArrayBuffer.isView(data)) return { kind: "binary", buffer: toOwnedArrayBuffer(data) };
+  if (data instanceof Blob) return { kind: "binary", buffer: await data.arrayBuffer() };
+  return null;
+}
+
+export function applyDecodedTransferPacket(packet: DecodedPacket, transfers: TransferItem[]) {
+  if (packet.kind === "message" && packet.message.type === "file-ack" && packet.message.id) return applyFileAck(transfers, packet.message.id);
+  return transfers;
+}
+
+export function createDataHandler(options: { onBinary: (buffer: ArrayBuffer) => void; onMessage: (message: BridgeMessage) => void; onError: () => void }) {
+  let queue = Promise.resolve();
+  return (data: unknown) => {
+    queue = queue.then(async () => {
+      const packet = await decodeBridgePacket(data);
+      if (!packet) return;
+      if (packet.kind === "binary") options.onBinary(packet.buffer);
+      else options.onMessage(packet.message);
+    }).catch(options.onError);
+  };
+}
+
+export function attachDataHandler(connection: DataConnection, handler: ReturnType<typeof createDataHandler>) {
+  connection.on("data", handler);
+}
+
 function awaitPeerOpen(peer: Peer) {
   return new Promise<void>((resolve, reject) => {
     let settled = false;
@@ -49,7 +90,6 @@ export function useBridgeConnection() {
   const pairingRef = useRef<Pairing | null>(null);
   const expiryTimerRef = useRef<number | null>(null);
   const incomingFileRef = useRef<IncomingFile | null>(null);
-  const dataQueueRef = useRef(Promise.resolve());
 
   const updateTransfer = useCallback((id: string, updates: Partial<TransferItem>) => setTransfers(current => current.map(item => item.id === id ? { ...item, ...updates } : item)), []);
 
@@ -94,27 +134,21 @@ export function useBridgeConnection() {
     connection.on("open", () => { setStatus("connected"); setError(null); });
     connection.on("close", () => { if (pairingRef.current) { setStatus("error"); setError("Connection closed. Create a new bridge to reconnect."); } });
     connection.on("error", cause => { setStatus("error"); setError(errorMessage(cause)); });
-    connection.on("data", data => {
-      dataQueueRef.current = dataQueueRef.current.then(async () => {
-        if (typeof data === "string") {
-          try {
-            const message = JSON.parse(data) as { type?: string; id?: string; body?: string; name?: string; size?: number; mime?: string; time?: number };
-            const body = message.body;
-            if (message.type === "file-ack" && message.id) updateTransfer(message.id, { progress: 100, status: "complete" });
-            if (message.type === "text" && body) setTexts(current => [...current, { id: message.id ?? fileId(), body, direction: "incoming", time: message.time ?? Date.now() }]);
-            if (message.type === "file-meta" && message.id && message.name && typeof message.size === "number") {
-              incomingFileRef.current = { id: message.id, name: message.name, size: message.size, mime: message.mime ?? "", chunks: [], received: 0 };
-              setTransfers(current => [...current, { id: message.id!, name: message.name!, size: message.size!, progress: 0, status: "receiving", direction: "incoming" }]);
-            }
-            if (message.type === "file-complete" && message.id) finishIncomingFile(message.id, connection);
-            return;
-          } catch { return; }
+    attachDataHandler(connection, createDataHandler({
+      onBinary: receiveChunk,
+      onError: () => setError("A received file packet could not be processed."),
+      onMessage: message => {
+        const packet: DecodedPacket = { kind: "message", message };
+        const body = message.body;
+        if (message.type === "file-ack" && message.id) setTransfers(current => applyDecodedTransferPacket(packet, current));
+        if (message.type === "text" && body) setTexts(current => [...current, { id: message.id ?? fileId(), body, direction: "incoming", time: message.time ?? Date.now() }]);
+        if (message.type === "file-meta" && message.id && message.name && typeof message.size === "number") {
+          incomingFileRef.current = { id: message.id, name: message.name, size: message.size, mime: message.mime ?? "", chunks: [], received: 0 };
+          setTransfers(current => [...current, { id: message.id!, name: message.name!, size: message.size!, progress: 0, status: "receiving", direction: "incoming" }]);
         }
-        if (data instanceof ArrayBuffer) receiveChunk(data);
-        else if (ArrayBuffer.isView(data)) receiveChunk(new Uint8Array(data.buffer, data.byteOffset, data.byteLength).slice().buffer);
-        else if (data instanceof Blob) receiveChunk(await data.arrayBuffer());
-      }).catch(() => setError("A received file packet could not be processed."));
-    });
+        if (message.type === "file-complete" && message.id) finishIncomingFile(message.id, connection);
+      },
+    }));
   }, [finishIncomingFile, receiveChunk, updateTransfer]);
 
   const configurePeer = useCallback((peer: Peer) => {
