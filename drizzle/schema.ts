@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { index, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,4 +25,29 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/** Short-lived metadata for a two-device WebRTC pairing. No transferred file bytes are stored. */
+export const pairingSessions = mysqlTable(
+  "pairing_sessions",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    pinHash: varchar("pinHash", { length: 64 }).notNull(),
+    hostToken: varchar("hostToken", { length: 48 }).notNull(),
+    guestToken: varchar("guestToken", { length: 48 }),
+    expiresAt: timestamp("expiresAt").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [index("pairing_sessions_pin_expiry_idx").on(table.pinHash, table.expiresAt)]
+);
+
+/** Ephemeral WebRTC SDP and ICE candidates; they expire alongside the pairing session. */
+export const pairingSignals = mysqlTable(
+  "pairing_signals",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    sessionId: varchar("sessionId", { length: 32 }).notNull(),
+    recipientRole: mysqlEnum("recipientRole", ["host", "guest"]).notNull(),
+    payload: text("payload").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [index("pairing_signals_recipient_idx").on(table.sessionId, table.recipientRole, table.id)]
+);

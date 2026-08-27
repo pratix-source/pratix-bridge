@@ -1,0 +1,17 @@
+# Project TODO
+
+- [x] Referans Pratix ana sayfa tasarım dilini analiz etmek ve uygulama tasarım ilkelerini belgelemek
+- [x] PIN/QR tabanlı kısa ömürlü eşleştirme oturumu için sinyalleşme altyapısını geliştirmek
+- [x] WebRTC DataChannel üzerinden metin iletimi ve dosya aktarımını geliştirmek
+- [x] Bağlantı, hata, tekrar deneme, ilerleme, dosya kuyruğu ve indirme geri bildirimlerini eklemek
+- [x] Pratix tasarım diline uygun, mobil öncelikli ana transfer arayüzünü geliştirmek
+- [x] Açık/gece tema geçişini ve kalıcı kullanıcı tercihini uygulamak
+- [x] İngilizce varsayılanı dahil 12 dil için seçici ve temel arayüz çevirilerini eklemek
+- [x] Akışı engellemeyen, erişilebilir ve net biçimde ayrıştırılmış reklam alanlarını eklemek
+- [x] SEO meta verilerini, canonical etiketi, robots.txt, sitemap.xml ve JSON-LD yapılandırılmış verisini eklemek
+- [x] Short-tail ve long-tail anahtar kelimeleri doğal kullanan SEO makalesini eklemek
+- [x] GitHub aktarımı ve Vercel deploy süreci için yapılandırma ve dokümantasyon hazırlamak
+- [x] Vitest kapsamını yazmak ve uygulamanın kalite kontrollerini çalıştırmak
+- [x] Kaynak kodu, SEO içeriği, yapılandırmalar ve belgeleri içeren ZIP arşivini oluşturmak
+- [ ] Son kontrol edilmiş proje sürümünü ve ZIP paketini kullanıcıya teslim etmek
+- [x] PWA manifesti, uygulama simgeleri ve desteklenen tarayıcılarda ana ekrana ekleme akışını eklemek

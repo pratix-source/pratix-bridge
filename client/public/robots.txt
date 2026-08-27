@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bridge.pratix.io/sitemap.xml
