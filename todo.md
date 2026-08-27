@@ -34,3 +34,8 @@
 - [x] Sahte DataConnection ile gerçek data handler davranışını ArrayBufferView ve file-ack senaryolarında doğrulamak
 - [x] Davranış testlerinden sonra son test, build ve GitHub push kontrolünü tamamlamak
 - [x] Son DataConnection davranış testi değişikliklerini pratix-source/pratix-bridge main dalına push edip sonucu doğrulamak
+- [x] SEO Guide bölümünü daha kapsamlı içerik ve bölüm başlıklarıyla zenginleştirmek
+- [x] SEO Guide içeriğini seçilen dil değişince 12 dilde göstermek
+- [x] SEO Guide çeviri testlerini, build’i ve GitHub main push’ını tamamlamak
+- [ ] SEO Guide yerelleştirme ve zengin içerik değişikliklerini pratix-source/pratix-bridge main dalına push edip sonucu doğrulamak
+- [ ] GitHub push sonrasında SEO sürümünün test ve build çıktısını yeniden doğrulamak
