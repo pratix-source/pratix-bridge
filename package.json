@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && sh scripts/run-seo-postprocess.sh",
     "start": "vite preview",
     "check": "tsc --noEmit",
     "format": "prettier --write .",
