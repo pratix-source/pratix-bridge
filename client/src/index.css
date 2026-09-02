@@ -14,3 +14,227 @@
 @layer base { * { @apply border-border outline-ring/50; } html { scroll-behavior: smooth; } body { @apply bg-background text-foreground; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; } button:not(:disabled), [role="button"]:not([aria-disabled="true"]), [type="button"]:not(:disabled), [type="submit"]:not(:disabled), a[href], select:not(:disabled) { @apply cursor-pointer; } ::selection { background: color-mix(in oklab, oklch(.62 .2 264) 28%, transparent); } }
 @layer components { .container { width: 100%; margin-inline: auto; padding-inline: 1rem; } @media (min-width: 640px) { .container { padding-inline: 1.5rem; } } @media (min-width: 1024px) { .container { max-width: 1280px; padding-inline: 2rem; } } }
 .bridge-shell { isolation: isolate; }.bridge-aurora { pointer-events: none; position: absolute; z-index: -1; left: 50%; top: 72px; width: min(980px, 92vw); height: 480px; transform: translateX(-50%); background: radial-gradient(ellipse at 50% 0%, color-mix(in oklab, oklch(.67 .19 264) 18%, transparent), transparent 70%); filter: blur(10px); }.dark .bridge-aurora { background: radial-gradient(ellipse at 50% 0%, color-mix(in oklab, oklch(.55 .2 264) 25%, transparent), transparent 70%); }.bridge-workspace { backdrop-filter: blur(18px); }@media (prefers-reduced-motion: no-preference) { .bridge-workspace { animation: rise-in .42s cubic-bezier(.23,1,.32,1) both; } @keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } } }
+
+/* pratix-standardization */
+/* Pratix.io shared visual language — visual-only overrides. */
+:root {
+  --pratix-blue: #2563eb;
+  --pratix-blue-dark: #1d4ed8;
+  --pratix-ink: #0f172a;
+  --pratix-muted: #64748b;
+  --pratix-bg: #f8fafc;
+  --pratix-surface: #ffffff;
+  --pratix-border: #e2e8f0;
+  --pratix-soft: #eff6ff;
+  --pratix-radius: 18px;
+  --pratix-radius-sm: 12px;
+  --pratix-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --pratix-shadow-lg: 0 16px 38px rgba(15, 23, 42, 0.08);
+}
+
+html { background: var(--pratix-bg); }
+
+body {
+  background-color: var(--pratix-bg) !important;
+  color: var(--pratix-ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Shared navigation and brand treatment. */
+nav.sticky,
+nav.nav,
+header.sticky,
+header.nav,
+header.top {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: var(--pratix-border) !important;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+  backdrop-filter: blur(16px);
+}
+
+.brand,
+.brand-title,
+.brand-text,
+nav a:first-child,
+header a:first-child {
+  color: var(--pratix-ink);
+}
+
+.brand-mark,
+.brand-icon,
+header a:first-child > span:first-child,
+nav a:first-child > span:first-child {
+  border-radius: var(--pratix-radius-sm) !important;
+}
+
+nav select,
+header select,
+nav button,
+header button,
+.nav-actions .btn,
+.header-actions .btn {
+  border-radius: var(--pratix-radius-sm) !important;
+  border-color: var(--pratix-border) !important;
+}
+
+/* One button hierarchy across tools. */
+button,
+a.btn,
+.btn,
+button[class*="rounded-"],
+a[class*="rounded-"] {
+  border-radius: var(--pratix-radius-sm);
+}
+
+.btn-primary,
+button.primary,
+button[class*="bg-blue-600"],
+a[class*="bg-blue-600"] {
+  background: var(--pratix-blue) !important;
+  border-color: var(--pratix-blue) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18);
+}
+
+.btn-primary:hover,
+button.primary:hover,
+button[class*="bg-blue-600"]:hover,
+a[class*="bg-blue-600"]:hover {
+  background: var(--pratix-blue-dark) !important;
+}
+
+.btn-secondary,
+.btn-ghost,
+button.secondary,
+button[class*="border-"],
+a[class*="border-"] {
+  border-color: var(--pratix-border) !important;
+}
+
+/* Consistent controls without touching checkboxes, radios, ranges or file inputs. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+select,
+textarea {
+  border-radius: var(--pratix-radius-sm) !important;
+  border-color: #cbd5e1 !important;
+  background-color: #fff !important;
+  color: var(--pratix-ink);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):focus,
+select:focus,
+textarea:focus {
+  border-color: var(--pratix-blue) !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12) !important;
+  outline: none !important;
+}
+
+/* Shared surface language for cards, forms, metrics and output panels. */
+.card,
+.panel,
+.form-card,
+.formCard,
+.results-card,
+.metric,
+.feature-card,
+section[class*="rounded-[2rem]"],
+section[class*="rounded-3xl"] {
+  border-color: var(--pratix-border) !important;
+  border-radius: var(--pratix-radius) !important;
+  box-shadow: var(--pratix-shadow);
+}
+
+/* Shared advertising placeholder treatment. */
+.ad,
+.ad-slot,
+.ad-placeholder,
+[class*="ad-placeholder"] {
+  border-color: #cbd5e1 !important;
+  border-radius: var(--pratix-radius) !important;
+  background-color: #f8fafc !important;
+  color: #64748b !important;
+}
+
+/* Remove decorative page-specific grids so tool pages share the main site's calm canvas. */
+.soft-grid,
+.bg-grid-pattern {
+  background-image: none !important;
+}
+
+/* Tables and lower-page content follow the same quiet surface rhythm. */
+table {
+  border-color: var(--pratix-border);
+}
+
+thead,
+th {
+  color: var(--pratix-ink);
+}
+
+tbody tr {
+  border-color: var(--pratix-border);
+}
+
+footer {
+  border-color: var(--pratix-border) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  color: var(--pratix-muted) !important;
+}
+
+/* Preserve existing dark-theme behavior while aligning its surfaces. */
+body.dark,
+body:has(nav.nav):not(.light) {
+  --pratix-bg: #0f172a;
+  --pratix-surface: #111827;
+  --pratix-border: #334155;
+  --pratix-ink: #e2e8f0;
+  --pratix-muted: #94a3b8;
+  background-color: var(--pratix-bg) !important;
+  color: var(--pratix-ink);
+}
+
+body.dark nav,
+body.dark header,
+body:has(nav.nav):not(.light) nav,
+body:has(nav.nav):not(.light) header {
+  background: rgba(15, 23, 42, 0.92) !important;
+  border-color: var(--pratix-border) !important;
+}
+
+body.dark .card,
+body.dark .panel,
+body.dark .form-card,
+body.dark .formCard,
+body.dark .results-card,
+body.dark section[class*="rounded-[2rem]"],
+body.dark section[class*="rounded-3xl"],
+body:has(nav.nav):not(.light) .card,
+body:has(nav.nav):not(.light) .panel,
+body:has(nav.nav):not(.light) section[class*="rounded-[2rem]"],
+body:has(nav.nav):not(.light) section[class*="rounded-3xl"] {
+  background-color: var(--pratix-surface) !important;
+  border-color: var(--pratix-border) !important;
+  box-shadow: none;
+}
+
+body.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+body.dark select,
+body.dark textarea,
+body:has(nav.nav):not(.light) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+body:has(nav.nav):not(.light) select,
+body:has(nav.nav):not(.light) textarea {
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+  color: #e2e8f0;
+}
+
+body.dark footer,
+body:has(nav.nav):not(.light) footer {
+  background: rgba(15, 23, 42, 0.86) !important;
+  color: var(--pratix-muted) !important;
+}
+
+@media (max-width: 720px) {
+  main { width: min(100% - 24px, 1180px); }
+  .hero-grid { gap: 24px !important; }
+}
