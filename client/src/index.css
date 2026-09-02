@@ -89,7 +89,9 @@ a[class*="rounded-"] {
 .btn-primary,
 button.primary,
 button[class*="bg-blue-600"],
-a[class*="bg-blue-600"] {
+button[class*="bg-gradient-to-r"],
+a[class*="bg-blue-600"],
+a[class*="bg-gradient-to-r"] {
   background: var(--pratix-blue) !important;
   border-color: var(--pratix-blue) !important;
   color: #fff !important;
@@ -99,7 +101,9 @@ a[class*="bg-blue-600"] {
 .btn-primary:hover,
 button.primary:hover,
 button[class*="bg-blue-600"]:hover,
-a[class*="bg-blue-600"]:hover {
+button[class*="bg-gradient-to-r"]:hover,
+a[class*="bg-blue-600"]:hover,
+a[class*="bg-gradient-to-r"]:hover {
   background: var(--pratix-blue-dark) !important;
 }
 
@@ -130,6 +134,8 @@ textarea:focus {
 }
 
 /* Shared surface language for cards, forms, metrics and output panels. */
+#dropzone,
+.dropzone,
 .card,
 .panel,
 .form-card,
@@ -162,6 +168,14 @@ section[class*="rounded-3xl"] {
 }
 
 /* Tables and lower-page content follow the same quiet surface rhythm. */
+h1,
+h2,
+h3,
+h4 {
+  color: var(--pratix-ink);
+  letter-spacing: -0.02em;
+}
+
 table {
   border-color: var(--pratix-border);
 }
