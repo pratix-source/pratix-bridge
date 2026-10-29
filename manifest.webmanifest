@@ -1,0 +1,13 @@
+{
+  "name": "Pratix.io Web Tools",
+  "short_name": "Pratix.io",
+  "description": "Private browser tools for data, SEO, files and marketing.",
+  "start_url": "/en/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
